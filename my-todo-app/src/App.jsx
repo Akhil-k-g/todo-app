@@ -8,10 +8,24 @@ function App() {
 
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
+  const [editId, setEditId] = useState(0);
 
   const addTodo = () => {
-    setTodos([...todos, {list : todo , id:Date.now()}]);
-    setTodo("");
+    if (todo !== "") {
+      setTodos([...todos, { list: todo, id: Date.now(), status: false }]);
+      setTodo("");
+    }
+    if (editId) {
+      const findTodo = todos.find((todo) => todo.id === editId);
+      const updateTodo = todos.map((to) =>
+        to.id === findTodo.id
+          ? (to = { id: to.id, list: todo })
+          : (to = { id: to.id, list: to.list }),
+      );
+      setTodos(updateTodo);
+      setEditId(0);
+      setTodo("");
+    }
   };
 
   const preventSubmit = (e) => {
@@ -22,10 +36,26 @@ function App() {
     inputRef.current.focus();
   });
 
-  const deleteTodo = (id)=>{
-    
-    setTodos(todos.filter((todo)=>todo.id !== id))
-  }
+  const deleteTodo = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
+  const completeTodo = (id) => {
+    let complete = todos.map((item) => {
+      if (item.id === id) {
+        return { ...item, status: !item.status };
+      }
+      return item;
+    });
+    setTodos(complete);
+  };
+
+  const editTodo = (id) => {
+    const editingTodo = todos.find((to) => to.id === id);
+    setTodo(editingTodo.list);
+    setEditId(editingTodo.id);
+    console.log(editingTodo);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -50,7 +80,7 @@ function App() {
             onClick={addTodo}
             className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
           >
-            ADD
+            {editId ? "EDIT" : "ADD"}
           </button>
         </form>
 
@@ -61,18 +91,29 @@ function App() {
                 key={index}
                 className="flex justify-between items-center bg-gray-100 px-4 py-3 rounded-lg shadow-sm"
               >
-                <span> {todo.list} </span>
+                <span className={todo.status ? "line-through opacity-50" : ""}>
+                  {" "}
+                  {todo.list}{" "}
+                </span>
                 <div className="flex flex-row gap-2">
                   <IoMdDoneAll
+                    onClick={() => {
+                      completeTodo(todo.id);
+                    }}
                     className="cursor-pointer text-green-600"
                     title="complete"
                   />
                   <FiEdit
+                    onClick={() => {
+                      editTodo(todo.id);
+                    }}
                     className="cursor-pointer text-blue-600"
                     title="edit"
                   />
                   <MdDelete
-                    onClick={()=>{deleteTodo(todo.id)}}
+                    onClick={() => {
+                      deleteTodo(todo.id);
+                    }}
                     className="cursor-pointer text-red-600"
                     title="delete"
                   />
