@@ -1,27 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
+import { IoMdDoneAll } from "react-icons/io";
+import { FiEdit } from "react-icons/fi";
+import { MdDelete } from "react-icons/md";
 
 function App() {
-  
-  const inputRef = useRef()
+  const inputRef = useRef();
 
-  const [todo,setTodo] =useState("");
-  const [todos,setTodos] = useState([])
-  
-  const addTodo = ()=>{
-     setTodos([...todos,todo])
-     setTodo('')
+  const [todo, setTodo] = useState("");
+  const [todos, setTodos] = useState([]);
 
+  const addTodo = () => {
+    setTodos([...todos, todo]);
+    setTodo("");
+  };
+
+  const preventSubmit = (e) => {
+    e.preventDefault();
+  };
+
+  useEffect(() => {
+    inputRef.current.focus();
+  });
+
+  const deleteTodo = (index)=>{
+    const updateTodos = todos.filter((item,i)=>i !== index)
+    setTodos(updateTodos)
   }
-
-  const preventSubmit=(e)=>{
-      e.preventDefault()
-
-  }
-
-  useEffect(()=>{
-   inputRef.current.focus()
-  })
-
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -31,7 +35,12 @@ function App() {
         </h2>
 
         <form onSubmit={preventSubmit} className="flex gap-2 mb-6">
-          <input value={todo} ref={inputRef} onChange={((e)=>{setTodo(e.target.value)})} 
+          <input
+            value={todo}
+            ref={inputRef}
+            onChange={(e) => {
+              setTodo(e.target.value);
+            }}
             type="text"
             placeholder="Enter your message..."
             className="flex-1 border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
@@ -46,20 +55,31 @@ function App() {
         </form>
 
         <ul className="space-y-3">
-         
-           {todos.map((todo,index)=>{
-              return(
-
-              <li key={index} className="flex justify-between items-center bg-gray-100 px-4 py-3 rounded-lg shadow-sm">
-              <span>{todo}</span>
-            <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
-              Delete
-            </button>
-            </li>
-  
-              )
-           })}
-         
+          {todos.map((todo, index) => {
+            return (
+              <li
+                key={index}
+                className="flex justify-between items-center bg-gray-100 px-4 py-3 rounded-lg shadow-sm"
+              >
+                <span> {todo} </span>
+                <div className="flex flex-row gap-2">
+                  <IoMdDoneAll
+                    className="cursor-pointer text-green-600"
+                    title="complete"
+                  />
+                  <FiEdit
+                    className="cursor-pointer text-blue-600"
+                    title="edit"
+                  />
+                  <MdDelete
+                    onClick={()=>{deleteTodo(index)}}
+                    className="cursor-pointer text-red-600"
+                    title="delete"
+                  />
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
