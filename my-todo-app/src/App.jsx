@@ -10,7 +10,7 @@ function App() {
   const [todos, setTodos] = useState([]);
 
   const addTodo = () => {
-    setTodos([...todos, todo]);
+    setTodos([...todos, {list : todo , id:Date.now()}]);
     setTodo("");
   };
 
@@ -22,9 +22,9 @@ function App() {
     inputRef.current.focus();
   });
 
-  const deleteTodo = (index)=>{
-    const updateTodos = todos.filter((item,i)=>i !== index)
-    setTodos(updateTodos)
+  const deleteTodo = (id)=>{
+    
+    setTodos(todos.filter((todo)=>todo.id !== id))
   }
 
   return (
@@ -61,7 +61,7 @@ function App() {
                 key={index}
                 className="flex justify-between items-center bg-gray-100 px-4 py-3 rounded-lg shadow-sm"
               >
-                <span> {todo} </span>
+                <span> {todo.list} </span>
                 <div className="flex flex-row gap-2">
                   <IoMdDoneAll
                     className="cursor-pointer text-green-600"
@@ -72,7 +72,7 @@ function App() {
                     title="edit"
                   />
                   <MdDelete
-                    onClick={()=>{deleteTodo(index)}}
+                    onClick={()=>{deleteTodo(todo.id)}}
                     className="cursor-pointer text-red-600"
                     title="delete"
                   />
